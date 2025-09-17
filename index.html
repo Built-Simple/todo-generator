@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Built Simple - Project To-Do List Prompt Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            color: #00FF00;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #00FF00;
+            margin-bottom: 10px;
+            font-size: 2em;
+            text-shadow: 0 0 10px #00FF00;
+        }
+
+        .tagline {
+            color: #008800;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #00FF00;
+            font-weight: bold;
+        }
+
+        textarea {
+            width: 100%;
+            background: #111;
+            color: #00FF00;
+            border: 1px solid #00FF00;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin-bottom: 5px;
+            min-height: 250px;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #00FF00;
+            box-shadow: 0 0 5px #00FF00;
+        }
+
+        button {
+            background: #00FF00;
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 20px 10px 20px 0;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: #000;
+            color: #00FF00;
+            border: 2px solid #00FF00;
+        }
+
+        #output {
+            background: #0a0a0a;
+            border: 2px solid #00FF00;
+            padding: 20px;
+            margin-top: 30px;
+            display: none;
+            max-height: 600px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        #output.show {
+            display: block;
+        }
+
+        .copy-button {
+            background: #008800;
+        }
+
+        .hint {
+            color: #008800;
+            font-size: 0.85em;
+            font-style: italic;
+            margin-top: 5px;
+        }
+
+        .step-indicator {
+            background: #111;
+            border: 1px solid #00FF00;
+            padding: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .info-box {
+            background: #001100;
+            border: 1px solid #00FF00;
+            color: #00FF00;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 0.9em;
+        }
+
+        .saved-message {
+            color: #00FF00;
+            padding: 10px;
+            border: 1px solid #00FF00;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .saved-message.show {
+            display: block;
+        }
+
+        .quick-tips {
+            background: #0a0a0a;
+            border-left: 3px solid #00FF00;
+            padding: 10px;
+            margin: 20px 0;
+        }
+
+        .quick-tips h3 {
+            color: #00FF00;
+            margin-bottom: 10px;
+        }
+
+        .quick-tips ul {
+            margin-left: 20px;
+            color: #008800;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="step-indicator">
+            STEP 3 OF 3: Generate Your Comprehensive To-Do List
+        </div>
+
+        <h1>PROJECT TO-DO LIST PROMPT GENERATOR</h1>
+        <p class="tagline">Combine everything from Steps 1 & 2 into a master action plan. Zero thinking required.</p>
+
+        <div class="info-box">
+            📋 This takes your problem and solution from Steps 1 & 2 and creates a prompt that will generate your complete, step-by-step action plan with time estimates, checkpoints, and bail-out strategies.
+        </div>
+
+        <form id="todoForm">
+            <div class="section">
+                <label for="step1-output">Step 1 Output - Your Problem & Solution:</label>
+                <textarea id="step1-output" name="step1-output" placeholder="Paste everything from Step 1 (Solution Architect) here. This includes:&#10;- Your problem description&#10;- What it's costing you&#10;- The proposed solution&#10;- Tools needed&#10;- Reality check&#10;&#10;Just copy and paste the entire conversation or output."></textarea>
+                <p class="hint">This is the complete output from your Solution Architect conversation.</p>
+            </div>
+
+            <div class="section">
+                <label for="step2-output">Step 2 Output - Your Project Instructions:</label>
+                <textarea id="step2-output" name="step2-output" placeholder="Paste everything from Step 2 (Project Setup Generator) here. This includes:&#10;- Your project context&#10;- Build environment details&#10;- External services to research&#10;- Coding rules&#10;- Safety guidelines&#10;&#10;Just copy and paste the entire project instructions."></textarea>
+                <p class="hint">This is the complete output from your Project Setup Generator.</p>
+            </div>
+
+            <button type="button" onclick="generateTodoPrompt()">Generate To-Do List Prompt</button>
+            <button type="button" onclick="loadSavedData()" style="background: #666;">Auto-Load Previous Steps</button>
+            <button type="button" onclick="clearAll()" style="background: #440000;">Clear Everything</button>
+        </form>
+
+        <div class="quick-tips">
+            <h3>Quick Tips:</h3>
+            <ul>
+                <li>The more detail from Steps 1 & 2, the better your to-do list</li>
+                <li>Don't edit or "clean up" - paste everything as-is</li>
+                <li>This prompt will get you a printable checklist with time estimates</li>
+                <li>Each task will include what to do if you get stuck</li>
+            </ul>
+        </div>
+
+        <div id="saved-message" class="saved-message">
+            ✓ Your to-do list prompt has been generated and saved.
+        </div>
+
+        <div id="output">
+            <button onclick="copyToClipboard()" class="copy-button">Copy This Entire Prompt</button>
+            <button onclick="downloadPrompt()" style="background: #008800;">Download as Text File</button>
+            <div id="prompt-content"></div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-load on page load
+        window.addEventListener('load', function() {
+            loadSavedData();
+        });
+
+        function loadSavedData() {
+            let loaded = false;
+            
+            // Try to load Step 1 data
+            const step1Data = localStorage.getItem('builtsimple-problem');
+            if (step1Data) {
+                try {
+                    const data = JSON.parse(step1Data);
+                    // Reconstruct the Step 1 output from saved data
+                    let step1Output = `MY PROBLEM:\n${data.problem || ''}\n\n`;
+                    if (data.cost) step1Output += `WHAT THIS IS COSTING ME:\n${data.cost}\n\n`;
+                    if (data.dream) step1Output += `WHAT "FIXED" LOOKS LIKE:\n${data.dream}\n\n`;
+                    if (data.tried) step1Output += `WHAT I'VE ALREADY TRIED:\n${data.tried}\n\n`;
+                    
+                    document.getElementById('step1-output').value = step1Output;
+                    loaded = true;
+                } catch(e) {
+                    console.log('Could not parse Step 1 data');
+                }
+            }
+            
+            // Also check for solution data
+            const solutionData = localStorage.getItem('builtsimple-solution');
+            if (solutionData) {
+                try {
+                    const data = JSON.parse(solutionData);
+                    if (data.solution) {
+                        document.getElementById('step1-output').value = data.solution;
+                        loaded = true;
+                    }
+                } catch(e) {
+                    console.log('Could not parse solution data');
+                }
+            }
+            
+            // Try to load Step 2 data
+            const step2Data = localStorage.getItem('builtsimple-project');
+            if (step2Data) {
+                try {
+                    const data = JSON.parse(step2Data);
+                    if (data.prompt) {
+                        document.getElementById('step2-output').value = data.prompt;
+                        loaded = true;
+                    }
+                } catch(e) {
+                    console.log('Could not parse Step 2 data');
+                }
+            }
+            
+            if (loaded) {
+                showNotification('✓ Loaded your saved data from previous steps');
+            }
+        }
+
+        function clearAll() {
+            if (confirm('This will clear all text. Are you sure?')) {
+                document.getElementById('step1-output').value = '';
+                document.getElementById('step2-output').value = '';
+                showNotification('✓ All fields cleared');
+            }
+        }
+
+        function showNotification(message) {
+            const msg = document.getElementById('saved-message');
+            msg.textContent = message;
+            msg.classList.add('show');
+            setTimeout(() => {
+                msg.classList.remove('show');
+            }, 3000);
+        }
+
+        function generateTodoPrompt() {
+            const step1Output = document.getElementById('step1-output').value;
+            const step2Output = document.getElementById('step2-output').value;
+
+            if (!step1Output || !step2Output) {
+                alert("Please paste outputs from both Step 1 and Step 2 to generate your to-do list");
+                return;
+            }
+
+            const prompt = `I need you to create a comprehensive, actionable to-do list based on my problem and solution. I'm a small business owner with minimal technical skills (copy-paste level).
+
+============================================
+STEP 1 OUTPUT - MY PROBLEM AND SOLUTION:
+============================================
+${step1Output}
+
+============================================
+STEP 2 OUTPUT - MY PROJECT INSTRUCTIONS:
+============================================
+${step2Output}
+
+============================================
+YOUR TASK:
+============================================
+
+Create a COMPLETE, PRINTABLE TO-DO LIST that includes:
+
+1. PRE-BUILD CHECKLIST
+□ List everything I need before starting
+□ Accounts to create
+□ Software to install
+□ Information to gather
+□ Costs to verify
+
+2. RESEARCH PHASE (CRITICAL)
+For EVERY external service mentioned:
+□ Task: "Research [Service Name] current pricing (not from AI training data)"
+□ Task: "Verify [Service Name] setup process is still accurate"
+□ Task: "Check if [Service Name] has free tier or trial"
+□ Task: "Find alternative to [Service Name] if too expensive/complex"
+□ Include search terms like: "[Service] pricing 2025" or "[Service] quickstart guide"
+
+3. BUILD PHASES
+Break into logical phases:
+
+PHASE 1: Foundation (Day 1-X)
+□ Task with time estimate
+□ What could go wrong
+□ How to know it worked
+□ If stuck, do this
+
+PHASE 2: Core Features (Day X-Y)
+[Continue pattern]
+
+PHASE 3: Testing (Day Y-Z)
+[Continue pattern]
+
+PHASE 4: Launch (Day Z)
+[Continue pattern]
+
+4. FOR EACH TASK INCLUDE:
+□ Task: [Specific action]
+⏱️ Time: [Realistic estimate]
+🔴 Watch out for: [Common mistake]
+✅ Success looks like: [Specific outcome]
+🆘 If stuck: [Exact next step]
+📝 Note: [Any special consideration]
+
+5. CHECKPOINT SYSTEM
+After every 3-5 tasks:
+⚠️ CHECKPOINT: Verify [specific thing] before continuing
+- What to test
+- Expected result
+- If it fails, do this
+
+6. TIME REALITY CHECK
+Based on 1 hour/day availability:
+- Total tasks: X
+- Total estimated hours: Y
+- Calendar days needed: Z
+- Realistic completion date: [Date]
+
+7. DAILY MINI-GOALS
+Day 1: [What you'll accomplish]
+Day 2: [What you'll accomplish]
+[Continue for first week]
+
+8. EMERGENCY PROCEDURES
+If completely stuck:
+- Save all files to "backup" folder
+- Document the exact error
+- Try this simpler alternative
+- Last resort bail-out plan
+
+9. QUICK WINS SECTION
+Tasks you can complete in under 15 minutes to build momentum:
+□ Quick task 1
+□ Quick task 2
+□ Quick task 3
+
+10. RED FLAGS TO WATCH FOR
+List specific warning signs that mean STOP and get help:
+- If you see [specific error]
+- If [service] asks for [unexpected thing]
+- If cost exceeds $[amount]
+
+Format this as a checklist I can print and physically check off. Use checkboxes (□) for every task.
+
+Number tasks sequentially (Task 1, Task 2, etc.) and note dependencies (e.g., "Requires Task 3 complete").
+
+Make this so detailed that I never have to think - just follow the checklist.
+
+Start the list with: "TOTAL ESTIMATED TIME: X hours over Y days"
+
+End with:
+- TODAY'S FIRST TASK: [Something under 10 minutes]
+- This week you'll have: [Specific accomplishment]
+- In 30 days you'll have: [Working solution]`;
+
+            document.getElementById('prompt-content').textContent = prompt;
+            document.getElementById('output').classList.add('show');
+            
+            // Save to localStorage
+            const todoData = {
+                step1Output: step1Output,
+                step2Output: step2Output,
+                generatedPrompt: prompt,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('builtsimple-todo-prompt', JSON.stringify(todoData));
+            
+            // Scroll to output
+            document.getElementById('output').scrollIntoView({ behavior: 'smooth' });
+
+            showNotification('✓ To-do list prompt generated and saved');
+        }
+
+        function copyToClipboard() {
+            const promptText = document.getElementById('prompt-content').textContent;
+            navigator.clipboard.writeText(promptText).then(() => {
+                const button = document.querySelector('.copy-button');
+                const originalText = button.textContent;
+                button.textContent = '✓ Copied! Paste this into AI';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            });
+        }
+
+        function downloadPrompt() {
+            const promptText = document.getElementById('prompt-content').textContent;
+            const blob = new Blob([promptText], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'todo-list-prompt.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            showNotification('✓ Prompt downloaded as text file');
+        }
+    </script>
+</body>
+</html>
