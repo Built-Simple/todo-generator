@@ -167,6 +167,13 @@
 
         <h1>PROJECT TO-DO LIST PROMPT GENERATOR</h1>
         <p class="tagline">Combine everything from Steps 1 & 2 into a master action plan. Zero thinking required.</p>
+        
+        <div style="background: #0a0a0a; border: 1px solid #00FF00; padding: 10px; margin: 20px 0; text-align: center;">
+            <strong>WORKFLOW:</strong> 
+            <a href="https://built-simple.github.io/solution-architect/" style="color: #008800;">Step 1: Solution Architect</a> → 
+            <a href="https://built-simple.github.io/project-setup/" style="color: #008800;">Step 2: Project Setup</a> → 
+            <span style="color: #00FF00;">Step 3: Todo Generator</span>
+        </div>
 
         <div class="info-box">
             📋 This takes your problem and solution from Steps 1 & 2 and creates a prompt that will generate your complete, step-by-step action plan with time estimates, checkpoints, and bail-out strategies.
@@ -207,6 +214,7 @@
         <div id="output">
             <button onclick="copyToClipboard()" class="copy-button">Copy This Entire Prompt</button>
             <button onclick="downloadPrompt()" style="background: #008800;">Download as Text File</button>
+            <button onclick="exportAllResults()" style="background: #FF6600;">Export All 3 Steps as ZIP</button>
             <div id="prompt-content"></div>
         </div>
     </div>
@@ -450,6 +458,66 @@ End with:
             document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
             showNotification('✓ Prompt downloaded as text file');
+        }
+
+        function exportAllResults() {
+            // Get all stored data
+            const step1Data = localStorage.getItem('builtsimple-solution');
+            const step2Data = localStorage.getItem('builtsimple-project');
+            const step3Data = localStorage.getItem('builtsimple-todo-prompt');
+            
+            let step1Text = 'No Step 1 data found';
+            let step2Text = 'No Step 2 data found';
+            let step3Text = document.getElementById('prompt-content').textContent || 'No Step 3 data generated';
+            
+            if (step1Data) {
+                try {
+                    const data = JSON.parse(step1Data);
+                    step1Text = data.solution || 'No solution found';
+                } catch(e) {}
+            }
+            
+            if (step2Data) {
+                try {
+                    const data = JSON.parse(step2Data);
+                    step2Text = data.prompt || 'No project instructions found';
+                } catch(e) {}
+            }
+            
+            // Create combined text file
+            const allResults = `BUILT SIMPLE - COMPLETE PROJECT RESULTS
+Generated: ${new Date().toLocaleString()}
+
+============================================
+STEP 1: SOLUTION ARCHITECT OUTPUT
+============================================
+${step1Text}
+
+============================================
+STEP 2: PROJECT SETUP INSTRUCTIONS
+============================================
+${step2Text}
+
+============================================
+STEP 3: TODO LIST GENERATOR PROMPT
+============================================
+${step3Text}
+
+============================================
+END OF RESULTS
+============================================`;
+
+            const blob = new Blob([allResults], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'built-simple-complete-results.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            showNotification('✓ All results exported as single file');
         }
     </script>
 </body>
